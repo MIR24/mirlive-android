@@ -1,7 +1,6 @@
-package tv.mir24.mirlive;
+package tv.mir24.mirlive.utilities;
 
 import android.content.Context;
-import android.media.Image;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
 import android.widget.MediaController;
@@ -21,19 +20,19 @@ public class CustomMediaController extends MediaController {
     }
 
     @Override
-    public void show(int timeout){
+    public void show(int timeout) {
         super.show(timeout);
         closeButton.setVisibility(VISIBLE);
     }
 
     @Override
-    public void show(){
+    public void show() {
         super.show();
         closeButton.setVisibility(VISIBLE);
     }
 
     @Override
-    public void hide(){
+    public void hide() {
         super.hide();
         closeButton.setVisibility(INVISIBLE);
     }

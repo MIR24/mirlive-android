@@ -17,7 +17,8 @@
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:contentDescription="@string/close_btn_desc" />
+        android:contentDescription="@string/close_btn_desc"
+        android:alpha="0.7" />
 
     <ProgressBar
         android:layout_width="wrap_content"

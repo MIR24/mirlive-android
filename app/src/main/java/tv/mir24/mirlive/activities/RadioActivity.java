@@ -1,4 +1,4 @@
-package tv.mir24.mirlive;
+package tv.mir24.mirlive.activities;
 
 import android.app.Activity;
 import android.media.AudioManager;
@@ -6,7 +6,6 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -18,15 +17,49 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import tv.mir24.mirlive.R;
+
 public class RadioActivity extends Activity {
 
-    private static boolean isPlayed = false;
-    private static MediaPlayer mediaPlayer;
-    private static ImageButton radioPlayBtn;
-    private static ProgressBar loadingStatus;
-    private static TextView    currentSong;
-    private static Handler     mHandler;
-    private static int         mInterval = 15000;
+    private boolean isPlayed = false;
+    private MediaPlayer mediaPlayer;
+    private ImageButton radioPlayBtn;
+    private ProgressBar loadingStatus;
+    private TextView currentSong;
+    private Handler mHandler;
+    private int mInterval = 15000;
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                SongUpdateTask task = new SongUpdateTask();
+                task.execute();
+            } finally {
+                mHandler.postDelayed(mStatusChecker, mInterval);
+            }
+        }
+    };
+
+    private static String getCurrentSong() {
+        String meta = "Вы слушаете - радио \"МИР\"";
+        URL url = null;
+        BufferedReader in = null;
+        try {
+            url = new URL("http://data.radiomir.fm/metadata");
+            in = new BufferedReader(
+                    new InputStreamReader(
+                            url.openStream()));
+            meta = in.readLine();
+        } catch (Exception e) {
+        } finally {
+            if (in != null) try {
+                in.close();
+            } catch (IOException e) {
+            }
+
+        }
+        return meta;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +68,7 @@ public class RadioActivity extends Activity {
 
         mHandler = new Handler();
 
-        Button backBtn = (Button) findViewById(R.id.backBtn);
+        Button backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,8 +78,8 @@ public class RadioActivity extends Activity {
 
         final String url = getIntent().getStringExtra("liveUrl");
 
-        loadingStatus = (ProgressBar) findViewById(R.id.radioLoadingStatus);
-        currentSong = (TextView) findViewById(R.id.currentSong);
+        loadingStatus = findViewById(R.id.radioLoadingStatus);
+        currentSong = findViewById(R.id.currentSong);
 
         radioPlayBtn = (ImageButton) findViewById(R.id.radioPlayBtn);
         radioPlayBtn.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +142,7 @@ public class RadioActivity extends Activity {
         switchPlayButton(0);
     }
 
-    private static void switchPlayButton(int status) {
+    private void switchPlayButton(int status) {
         switch (status) {
             case 0:
                 isPlayed = false;
@@ -139,6 +172,21 @@ public class RadioActivity extends Activity {
         stopRepeatingTask();
     }
 
+    @Override
+    protected void onStop() {
+        if (!isChangingConfigurations()) {
+            super.onStop();
+        }
+    }
+
+    void startRepeatingTask() {
+        mStatusChecker.run();
+    }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(mStatusChecker);
+    }
+
     class SongUpdateTask extends AsyncTask<Void, Void, Void> {
 
         String meta = "Вы слушаете - радио \"МИР\"";
@@ -164,59 +212,5 @@ public class RadioActivity extends Activity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
         }
-    }
-
-    Runnable mStatusChecker = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                SongUpdateTask task = new SongUpdateTask();
-                task.execute();
-            } finally {
-                mHandler.postDelayed(mStatusChecker, mInterval);
-            }
-        }
-    };
-
-
-    private static String getCurrentSong() {
-        String meta = "Вы слушаете - радио \"МИР\"";
-        Log.d("Info", "current song get start");
-        URL url = null;
-        BufferedReader in = null;
-        try {
-            url = new URL("http://data.radiomir.fm/metadata");
-            in = new BufferedReader(
-                    new InputStreamReader(
-                            url.openStream()));
-            if(in.ready()) meta = in.readLine();
-        }
-        catch (Exception e) {
-            Log.d("ERROR", meta + " " + e.getMessage());
-            e.printStackTrace();
-        }
-        finally {
-            if(in != null) try {
-                in.close();
-            } catch (IOException e) {}
-
-        }
-        Log.d("Info", "current song got - " + meta);
-        return meta;
-    }
-
-    @Override
-    protected void onStop(){
-        if(!isChangingConfigurations()){
-            super.onStop();
-        }
-    }
-
-    void startRepeatingTask() {
-        mStatusChecker.run();
-    }
-
-    void stopRepeatingTask() {
-        mHandler.removeCallbacks(mStatusChecker);
     }
 }

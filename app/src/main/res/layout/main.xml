@@ -4,47 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
+    <fragment
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="1"
-        android:gravity="center_vertical|center_horizontal"
-        android:id="@+id/linearLayout"
+        android:name="tv.mir24.mirlive.fragments.HeaderFragment"
+        android:id="@+id/fragment"
+        tools:layout="@layout/header"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:text="@string/logo_text_1"
-            android:id="@+id/textView"
-            style="@style/LogoText1" />
-
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/appLogo"
-            android:src="@drawable/mir_play_logo"
-            android:contentDescription="@string/main_logo_desc"
-            android:layout_weight="0.20"
-            android:paddingTop="7dp"
-            android:paddingBottom="7dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="3dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/logo_text_2"
-            android:id="@+id/textView2"
-            android:typeface="sans"
-            style="@style/LogoText2" />
-    </LinearLayout>
+        android:layout_alignParentStart="true" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
@@ -52,7 +21,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_above="@+id/aboutBtn"
-        android:layout_below="@+id/linearLayout">
+        android:layout_below="@+id/fragment">
         <android.support.v4.view.PagerTitleStrip
             android:id="@+id/pagerTabStrip"
             android:layout_width="wrap_content"
@@ -85,14 +54,14 @@
         android:layout_height="match_parent"
         android:id="@+id/playLayout"
         android:visibility="visible"
-        android:layout_alignTop="@+id/pager"
         android:layout_above="@+id/aboutBtn"
-        android:paddingTop="30dp">
+        android:paddingTop="30dp"
+        android:layout_below="@+id/fragment">
 
         <ImageView
             android:layout_width="140dp"
             android:layout_height="135dp"
-            android:id="@+id/imageView2"
+            android:id="@+id/logo"
             android:src="@drawable/empty_logo"
             android:contentDescription="@string/image_of_empty_logo"
             android:layout_centerVertical="true"
@@ -102,17 +71,17 @@
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton"
+            android:id="@+id/playBtn"
             android:src="@drawable/radio_play_btn"
             android:cropToPadding="false"
             android:contentDescription="@string/radio_play_btn"
-            android:layout_alignTop="@+id/progressBar"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/progressBar"
+            android:id="@+id/loadingBar"
             android:indeterminateDrawable="@drawable/spinner_ring_light"
             android:indeterminateOnly="true"
             android:indeterminate="false"
@@ -124,12 +93,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/whatch_now_text"
-            android:id="@+id/textView3"
+            android:text="@string/watch_now_text"
+            android:id="@+id/watchLabel"
             android:textAlignment="center"
             android:textColor="@color/colorPrimaryDark"
             android:typeface="serif"
-            android:layout_below="@+id/imageView2"
+            android:layout_below="@+id/logo"
             android:layout_centerHorizontal="true" />
 
     </RelativeLayout>

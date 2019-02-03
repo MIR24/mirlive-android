@@ -1,23 +1,20 @@
-package tv.mir24.mirlive;
+package tv.mir24.mirlive.activities;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import tv.mir24.mirlive.R;
+import tv.mir24.mirlive.fragments.PageFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,14 +22,13 @@ public class MainActivity extends AppCompatActivity {
     static final String[] channels = {"МИР", "МИР24", "МИРHD", "Радио «МИР»", "МИР+3"};
     static final String[] streams =
             {"http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/mirtv_mobil/playlist.m3u8",
-             "http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/mir24_mobil/playlist.m3u8",
-             "http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/hd_low/playlist.m3u8",
-             "http://icecast.mirtv.cdnvideo.ru:8000/radio_mir128",
-             "http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/mirtv3_mobil/playlist.m3u8"};
+                    "http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/mir24_mobil/playlist.m3u8",
+                    "http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/hd_low/playlist.m3u8",
+                    "http://icecast.mirtv.cdnvideo.ru:8000/radio_mir128",
+                    "http://hls.mirtv.cdnvideo.ru/mirtv-parampublish/mirtv3_mobil/playlist.m3u8"};
 
-    ViewPager    pager;
+    ViewPager pager;
     CustomFragmentPagerAdapter pagerAdapter;
-    Button aboutBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,54 +40,48 @@ public class MainActivity extends AppCompatActivity {
         pager.setAdapter(pagerAdapter);
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(final int position) {
-                toggleChannelDesc(true);
+                TextView label = (TextView) findViewById(R.id.watchLabel);
+                if (position == 3) label.setText(R.string.listen_now_text);
+                else label.setText(R.string.watch_now_text);
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
 
-        aboutBtn = (Button) findViewById(R.id.aboutBtn);
+        Button aboutBtn = (Button) findViewById(R.id.aboutBtn);
         aboutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toggleChannelDesc(false);
+                Intent i = new Intent(getApplicationContext(), AboutActivity.class);
+                int channelId = pager.getCurrentItem();
+                i.putExtra("channelName", channels[channelId]);
+                i.putExtra("channelId", channelId);
+                startActivity(i);
             }
         });
-        /*button.setOnClickListener(new View.OnClickListener() {
+
+        ImageButton playBtn = (ImageButton) findViewById(R.id.playBtn);
+        playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i;
-                if(pager.getCurrentItem() == 3){
+                if (pager.getCurrentItem() == 3) {
                     i = new Intent(getApplicationContext(), RadioActivity.class);
-                }
-                else {
+                } else {
                     i = new Intent(getApplicationContext(), LiveActivity.class);
                 }
                 i.putExtra("liveUrl", streams[pager.getCurrentItem()]);
                 startActivity(i);
             }
-        });*/
+        });
 
-    }
-
-    private void toggleChannelDesc(boolean hide){
-        View currentView = pagerAdapter.getCurrentFragment().getView();
-        RelativeLayout descLayout = (RelativeLayout)currentView.findViewById(R.id.channelLayout);
-        RelativeLayout playLayout = (RelativeLayout)findViewById(R.id.playLayout);
-        if (hide || descLayout.getVisibility() == View.VISIBLE) {
-            descLayout.setVisibility(View.INVISIBLE);
-            playLayout.setVisibility(View.VISIBLE);
-            aboutBtn.setText("О канале");
-        } else {
-            descLayout.setVisibility(View.VISIBLE);
-            playLayout.setVisibility(View.INVISIBLE);
-            aboutBtn.setText("К эфиру");
-        }
     }
 
     private class CustomFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -104,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PageFragment.newInstance(position);
+            return PageFragment.newInstance();
         }
 
         @Override
